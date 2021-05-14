@@ -41,10 +41,10 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     
     // Outlets
     @IBOutlet var timer: WKInterfaceTimer!
-    @IBOutlet var recIDLabel: WKInterfaceLabel!
     @IBOutlet var recNumberPicker: WKInterfacePicker!
-    @IBOutlet var recordDataFromPhoneSwitch: WKInterfaceSwitch!
-    
+    @IBOutlet var startButton: WKInterfaceButton!
+    @IBOutlet var stopButton: WKInterfaceButton!
+
     // Constants
     let IDsAmount = 20
     let currentFrequency: Int = 60
@@ -304,7 +304,8 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
             // Preparing watch for new session
             self.sensorOutputs.removeAll()
             self.nextSessionid += 1
-            
+            self.recordID += 1
+            self.recNumberPicker.setSelectedItemIndex(self.recordID)
             
         }
         
@@ -315,10 +316,6 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
         
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
-    }
-    
-    @IBAction func recordDataFromPhoneSwitchChanged(_ value: Bool) {
-        isRecordDataFromPhone = value
     }
     
     @IBAction func recNumberPickerChanged(_ value: Int) {
@@ -332,14 +329,16 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     func waiting() {
         recNumberPicker.setEnabled(true)
         timer.setDate(Date(timeIntervalSinceNow: 0.0))
-        recordDataFromPhoneSwitch.setEnabled(true)
+        startButton.setEnabled(true)
+        stopButton.setEnabled(false)
     }
     
     func recording() {
         recNumberPicker.setEnabled(false)
+        startButton.setEnabled(false)
+        stopButton.setEnabled(true)
         timer.setDate(Date(timeIntervalSinceNow: 0.0))
         timer.start()
-        recordDataFromPhoneSwitch.setEnabled(false)
     }
     
     

@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="14109" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
-    <device id="watch42" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="18122" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch42"/>
     <dependencies>
         <deployment identifier="watchOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="14031"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="18022"/>
     </dependencies>
     <scenes>
         <!--DataCollector-->
@@ -14,17 +12,11 @@
             <objects>
                 <controller identifier="Main" title="DataCollector" id="AgC-eL-Hgc" customClass="MainIC" customModule="MotionCollectorWatch_Extension">
                     <items>
-                        <timer width="1" height="0.29999999999999999" alignment="center" textAlignment="center" id="UGD-RB-8yI">
-                            <fontDescription key="font" type="system" pointSize="35"/>
+                        <timer width="1" alignment="center" textAlignment="center" id="UGD-RB-8yI">
+                            <fontDescription key="font" type="system" pointSize="26"/>
                             <calendarUnit key="units" minute="YES" second="YES"/>
                         </timer>
-                        <group width="1" height="0.14999999999999999" alignment="left" id="qD5-wS-eY8">
-                            <items>
-                                <label width="0.5" height="1" alignment="left" text="Rec ID" textAlignment="left" id="7Ag-Iz-9qp"/>
-                                <label width="0.5" height="1" alignment="left" text="30" textAlignment="center" id="E52-i9-HjV"/>
-                            </items>
-                        </group>
-                        <group width="1" height="0.25" alignment="left" id="zch-V6-net">
+                        <group width="1" height="0.29999999999999999" alignment="left" id="zch-V6-net">
                             <items>
                                 <label width="0.5" height="1" alignment="left" text="Rec num" textAlignment="left" id="Zk2-7b-mu2"/>
                                 <picker width="0.5" height="1" alignment="left" focusStyle="stack" id="lJN-9t-7cw">
@@ -34,39 +26,33 @@
                                 </picker>
                             </items>
                         </group>
-                        <group width="1" height="0.29999999999999999" alignment="left" id="2YU-4i-TBW">
+                        <group width="1" alignment="left" id="7oD-9e-Roh">
                             <items>
-                                <switch width="1" alignment="left" value="YES" title="Record data from phone" id="jfE-cI-0CH">
+                                <button width="64" height="64" alignment="left" backgroundImage="record.circle.fill" catalog="system" id="GyS-fg-6Th">
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <fontDescription key="font" type="system" pointSize="15"/>
                                     <connections>
-                                        <action selector="recordDataFromPhoneSwitchChanged:" destination="AgC-eL-Hgc" id="RLU-Ri-wCM"/>
+                                        <action selector="startButtonPressed" destination="AgC-eL-Hgc" id="f1Q-4R-OBq"/>
                                     </connections>
-                                </switch>
+                                </button>
+                                <button width="64" height="64" alignment="right" enabled="NO" backgroundImage="stop.circle.fill" catalog="system" id="sIy-Fx-WIc">
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <connections>
+                                        <action selector="stopButtonPressed" destination="AgC-eL-Hgc" id="yQb-hx-SkS"/>
+                                    </connections>
+                                </button>
                             </items>
                         </group>
                     </items>
-                    <menu key="menu" id="rPq-6i-Jjn">
-                        <items>
-                            <menuItem title="Start" icon="accept" id="Vj3-qh-XhQ">
-                                <connections>
-                                    <action selector="startButtonPressed" destination="AgC-eL-Hgc" id="0rU-QA-8fU"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Stop" icon="decline" id="gkh-tw-253">
-                                <connections>
-                                    <action selector="stopButtonPressed" destination="AgC-eL-Hgc" id="UOf-1V-ZT7"/>
-                                </connections>
-                            </menuItem>
-                        </items>
-                    </menu>
                     <connections>
-                        <outlet property="recIDLabel" destination="E52-i9-HjV" id="8kP-nE-s1c"/>
                         <outlet property="recNumberPicker" destination="lJN-9t-7cw" id="M15-bb-7cc"/>
-                        <outlet property="recordDataFromPhoneSwitch" destination="jfE-cI-0CH" id="QzO-w0-Xn2"/>
+                        <outlet property="startButton" destination="GyS-fg-6Th" id="C1C-3A-lPy"/>
+                        <outlet property="stopButton" destination="sIy-Fx-WIc" id="wx2-of-Vsx"/>
                         <outlet property="timer" destination="UGD-RB-8yI" id="Cqm-0a-qu6"/>
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="171" y="312"/>
+            <point key="canvasLocation" x="170.87179487179489" y="311.66666666666669"/>
         </scene>
         <!--Static Notification Interface Controller-->
         <scene sceneID="AEw-b0-oYE">
@@ -92,4 +78,8 @@
             <point key="canvasLocation" x="468" y="643"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="record.circle.fill" catalog="system" width="128" height="121"/>
+        <image name="stop.circle.fill" catalog="system" width="128" height="121"/>
+    </resources>
 </document>
