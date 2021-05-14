@@ -700,17 +700,25 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
                     self.settingsTableVC?.periodSlider.setValue(60.0, animated: true)
                     self.settingsTableVC?.currentPeriodLabel.text = "60"
                     
-                    self.sessionType = SessionType.PhoneAndWatch
-                    self.StartButtonpressed((Any).self)
-                    
-                    // send back reply
-                    replyHandler(["response": "Starting collecting data..."])
-                    
+                    if message["RecordPhone"] as? Bool == true {
+                        self.sessionType = SessionType.PhoneAndWatch
+                        self.StartButtonpressed((Any).self)
+                        
+                        // send back reply
+                        replyHandler(["response": "Starting collecting data..."])
+                    } else {
+                        self.sessionType = SessionType.OnlyWatch
+                        replyHandler(["response": "Received start on watch only..."])
+                    }
                 } else {
-                    self.stopButtonPressed((Any).self)
-                    
-                    // send back reply
-                    replyHandler(["response": "Stopping collecting data..."])
+                    if self.sessionType != SessionType.OnlyWatch {
+                        self.stopButtonPressed((Any).self)
+                        
+                        // send back reply
+                        replyHandler(["response": "Stopping collecting data..."])
+                    } else {
+                        replyHandler(["response": "Received stop on watch only..."])
+                    }
                 }
                 
             }

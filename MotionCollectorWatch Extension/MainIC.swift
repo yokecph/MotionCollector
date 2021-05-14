@@ -116,17 +116,15 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     func startGettingData() {
         
         // send info to start data collecting on phone
-        if (isRecordDataFromPhone) {
-            let WCsession = WCSession.default
-            if WCsession.isReachable {
-                let data = ["Running": true, "RecordID": recordID] as [String : Any]
-                
-                WCsession.sendMessage(data, replyHandler: { (response) in
-                    DispatchQueue.main.async {
-                        print ("received response: \(response)")
-                    }
-                }, errorHandler: nil)
-            }
+        let WCsession = WCSession.default
+        if WCsession.isReachable {
+            let data = ["Running": true, "RecordID": recordID, "RecordPhone": isRecordDataFromPhone] as [String : Any]
+            
+            WCsession.sendMessage(data, replyHandler: { (response) in
+                DispatchQueue.main.async {
+                    print ("received response: \(response)")
+                }
+            }, errorHandler: nil)
         }
         
         // If we have already started the workout, then do nothing.
@@ -204,17 +202,15 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
         print("Ended health session")
         
         // send info to start data collecting on phone
-        if (isRecordDataFromPhone) {
-            let WCsession = WCSession.default
-            if WCsession.isReachable {
-                let data = ["Running": false]
-                
-                WCsession.sendMessage(data, replyHandler: { (response) in
-                    DispatchQueue.main.async {
-                        print ("received response: \(response)")
-                    }
-                }, errorHandler: nil)
-            }
+        let WCsession = WCSession.default
+        if WCsession.isReachable {
+            let data = ["Running": false]
+            
+            WCsession.sendMessage(data, replyHandler: { (response) in
+                DispatchQueue.main.async {
+                    print ("received response: \(response)")
+                }
+            }, errorHandler: nil)
         }
         
         // Clear the workout session.
