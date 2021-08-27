@@ -41,19 +41,19 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     
     // Outlets
     @IBOutlet var timer: WKInterfaceTimer!
-    @IBOutlet var recNumberPicker: WKInterfacePicker!
+    @IBOutlet var recNumberLabel: WKInterfaceLabel!
     @IBOutlet var startButton: WKInterfaceButton!
     @IBOutlet var stopButton: WKInterfaceButton!
 
     // Constants
-    let IDsAmount = 20
+    let IDsAmount = 100
     let currentFrequency: Int = 60
     
     // For session saving
     var nextSessionid: Int = 0
     var recordTime: String = ""
     var sensorOutputs = [SensorOutput]()
-    var isRecordDataFromPhone = true
+    var isRecordDataFromPhone = false
     var recordID: Int = 0
     var currentSessionDate: NSDate = NSDate()
     
@@ -66,20 +66,12 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     var session: HKWorkoutSession?
     
     
-    // MARK - WKInterfaceController events
+    // MARK: - WKInterfaceController events
     
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
         
-        // prepare recNumberPicker
-        var items = [WKPickerItem]()
-        for i in 0..<IDsAmount {
-            let item = WKPickerItem()
-            item.title = String (i)
-            items.append(item)
-        }
-        recNumberPicker.setItems(items)
-        
+        recNumberLabel.setText("\(recordID)")
         
         // needs to be implemented
         // findLastSessionId()
@@ -111,7 +103,7 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     
     
     
-    // MARK - Control work of getting motion Data
+    // MARK: - Control work of getting motion Data
     
     func startGettingData() {
         
@@ -165,10 +157,19 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
                 let GyroY = deviceMotion!.rotationRate.y
                 let GyroZ = deviceMotion!.rotationRate.z
                 
-                let AccX = deviceMotion!.gravity.x + deviceMotion!.userAcceleration.x;
-                let AccY = deviceMotion!.gravity.y + deviceMotion!.userAcceleration.y;
-                let AccZ = deviceMotion!.gravity.z + deviceMotion!.userAcceleration.z;
+                let AccX = deviceMotion!.userAcceleration.x;
+                let AccY = deviceMotion!.userAcceleration.y;
+                let AccZ = deviceMotion!.userAcceleration.z;
                 
+                let QuatX = deviceMotion!.attitude.quaternion.x
+                let QuatY = deviceMotion!.attitude.quaternion.y
+                let QuatZ = deviceMotion!.attitude.quaternion.z
+                let QuatW = deviceMotion!.attitude.quaternion.w
+                
+                let GravX = deviceMotion!.gravity.x
+                let GravY = deviceMotion!.gravity.y
+                let GravZ = deviceMotion!.gravity.z
+
                 // print ( "Gyro: \(currenTime) \(GyroX), \(GyroY), \(GyroZ)")
                 // print ( "Acc : \(currenTime) \(AccX), \(AccY), \(AccZ)")
                 
@@ -182,7 +183,14 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
                 sensorOutput.accX = AccX
                 sensorOutput.accY = AccY
                 sensorOutput.accZ = AccZ
-                
+                sensorOutput.quatX = QuatX
+                sensorOutput.quatY = QuatY
+                sensorOutput.quatZ = QuatZ
+                sensorOutput.quatW = QuatW
+                sensorOutput.gravX = GravX
+                sensorOutput.gravY = GravY
+                sensorOutput.gravZ = GravZ
+
                 self.sensorOutputs.append(sensorOutput)
                 
             }
@@ -235,7 +243,7 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     
     
     
-    // MARK - Action controlls
+    // MARK: - Action controlls
     
     @IBAction func startButtonPressed() {
         // check status
@@ -305,8 +313,7 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
             self.sensorOutputs.removeAll()
             self.nextSessionid += 1
             self.recordID += 1
-            self.recNumberPicker.setSelectedItemIndex(self.recordID)
-            
+            self.recNumberLabel.setText("\(self.recordID)")
         }
         
         
@@ -324,17 +331,17 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     
     
     
-    // MARK - Update changing state
+    // MARK: - Update changing state
     
     func waiting() {
-        recNumberPicker.setEnabled(true)
+        //recNumberPicker.setEnabled(true)
         timer.setDate(Date(timeIntervalSinceNow: 0.0))
         startButton.setEnabled(true)
         stopButton.setEnabled(false)
     }
     
     func recording() {
-        recNumberPicker.setEnabled(false)
+        //recNumberPicker.setEnabled(false)
         startButton.setEnabled(false)
         stopButton.setEnabled(true)
         timer.setDate(Date(timeIntervalSinceNow: 0.0))
@@ -343,7 +350,7 @@ class MainIC: WKInterfaceController, WCSessionDelegate {
     
     
     
-    // MARK - Work with WCSessionDelegate
+    // MARK: - Work with WCSessionDelegate
     
     func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
         DispatchQueue.main.async {

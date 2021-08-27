@@ -232,7 +232,9 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
     @IBAction func StartButtonpressed(_ sender: Any) {
         status = .recording
         
-        startGettingData()
+        if (self.sessionType != SessionType.OnlyWatch) {
+            startGettingData()
+        }
         UIUpdateTimer = Timer.scheduledTimer(timeInterval: 0.001, target: self, selector: #selector(updateTime), userInfo: nil, repeats: true)
         startTime = NSDate.timeIntervalSinceReferenceDate
         
@@ -258,7 +260,7 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
             characteristicGyro.x = sensorOutput.gyroX!
             characteristicGyro.y = sensorOutput.gyroY!
             characteristicGyro.z = sensorOutput.gyroZ!
-            characteristicGyro.toCharacteristicName = self.characteristicsNames[1]
+            characteristicGyro.toCharacteristicName = self.characteristicsNames[2]
             
             let characteristicAcc = Characteristic (context:context)
             characteristicAcc.x = sensorOutput.accX!
@@ -270,7 +272,7 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
             characteristicMag.x = sensorOutput.magX!
             characteristicMag.y = sensorOutput.magY!
             characteristicMag.z = sensorOutput.magZ!
-            characteristicMag.toCharacteristicName = self.characteristicsNames[2]
+            characteristicMag.toCharacteristicName = self.characteristicsNames[3]
             
             
             let sensorData = SensorData(context: context)
@@ -505,13 +507,22 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
         do {
             let records = try context.fetch(fetchRequest) as! [CharacteristicName]
             
-            if records.count != 3 {
+            if records.count != 5 {
+                
+                for record in records {
+                    context.delete(record)
+                }
+                
                 let characteristicName1 = CharacteristicName (context:context)
                 characteristicName1.name = "Gyro"
                 let characteristicName2 = CharacteristicName (context:context)
                 characteristicName2.name = "Acc"
                 let characteristicName3 = CharacteristicName (context:context)
                 characteristicName3.name = "Mag"
+                let characteristicName4 = CharacteristicName (context:context)
+                characteristicName4.name = "Quat"
+                let characteristicName5 = CharacteristicName (context:context)
+                characteristicName5.name = "Grav"
                 ad.saveContext()
             }
             
@@ -616,7 +627,7 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
                         // work with received data
                         print ("Start handling file...")
                         // sensorWatchOutputs = sessionContainerCopy.sensorOutputs
-                        if (self.sessionType == SessionType.PhoneAndWatch) {
+                        if (self.sessionType == SessionType.PhoneAndWatch || self.sessionType == SessionType.OnlyWatch) {
                             
                             for sensorOutput in sessionContainerCopy.sensorOutputs {
                                 
@@ -624,7 +635,7 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
                                 characteristicGyro.x = sensorOutput.gyroX!
                                 characteristicGyro.y = sensorOutput.gyroY!
                                 characteristicGyro.z = sensorOutput.gyroZ!
-                                characteristicGyro.toCharacteristicName = self.characteristicsNames[1]
+                                characteristicGyro.toCharacteristicName = self.characteristicsNames[2]
                                 
                                 let characteristicAcc = Characteristic (context:context)
                                 characteristicAcc.x = sensorOutput.accX!
@@ -632,13 +643,31 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
                                 characteristicAcc.z = sensorOutput.accZ!
                                 characteristicAcc.toCharacteristicName = self.characteristicsNames[0]
                                 
+                                let characteristicMag = Characteristic (context:context)
+                                characteristicMag.toCharacteristicName = self.characteristicsNames[3]
+
+                                let characteristicQuat = Characteristic (context:context)
+                                characteristicQuat.x = sensorOutput.quatX!
+                                characteristicQuat.y = sensorOutput.quatY!
+                                characteristicQuat.z = sensorOutput.quatZ!
+                                characteristicQuat.w = sensorOutput.quatW!
+                                characteristicQuat.toCharacteristicName = self.characteristicsNames[4]
                                 
+                                let characteristicGrav = Characteristic (context:context)
+                                characteristicGrav.x = sensorOutput.gravX!
+                                characteristicGrav.y = sensorOutput.gravY!
+                                characteristicGrav.z = sensorOutput.gravZ!
+                                characteristicGrav.toCharacteristicName = self.characteristicsNames[1]
+
                                 let sensorData = SensorData(context: context)
                                 sensorData.timeStamp = sensorOutput.timeStamp as NSDate?
                                 sensorData.toSensor = self.sensors[1]
                                 sensorData.addToToCharacteristic(characteristicGyro)
                                 sensorData.addToToCharacteristic(characteristicAcc)
-                                
+                                sensorData.addToToCharacteristic(characteristicMag)
+                                sensorData.addToToCharacteristic(characteristicQuat)
+                                sensorData.addToToCharacteristic(characteristicGrav)
+
                                 self.currentSession?.addToToSensorData(sensorData)
                             }
                             
@@ -708,6 +737,8 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
                         replyHandler(["response": "Starting collecting data..."])
                     } else {
                         self.sessionType = SessionType.OnlyWatch
+                        self.StartButtonpressed((Any).self)
+
                         replyHandler(["response": "Received start on watch only..."])
                     }
                 } else {
@@ -717,6 +748,8 @@ class CollectingDataVC: UIViewController, WCSessionDelegate, SettingsTableVCDele
                         // send back reply
                         replyHandler(["response": "Stopping collecting data..."])
                     } else {
+                        self.stopButtonPressed((Any).self)
+                        
                         replyHandler(["response": "Received stop on watch only..."])
                     }
                 }

@@ -15,7 +15,7 @@ protocol RecordIDVCDelegate: class {
 
 class RecordIDVC: UITableViewController {
     
-    let IDsAmount = 20
+    let IDsAmount = 100
     var IDs = [Int]()
     var selectedID: Int = 0
     

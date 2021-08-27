@@ -7,26 +7,26 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="18022"/>
     </dependencies>
     <scenes>
-        <!--DataCollector-->
+        <!--Main-->
         <scene sceneID="aou-V4-d1y">
             <objects>
-                <controller identifier="Main" title="DataCollector" id="AgC-eL-Hgc" customClass="MainIC" customModule="MotionCollectorWatch_Extension">
+                <controller identifier="Main" id="AgC-eL-Hgc" customClass="MainIC" customModule="MotionCollectorWatch_Extension">
                     <items>
-                        <timer width="1" alignment="center" textAlignment="center" id="UGD-RB-8yI">
-                            <fontDescription key="font" type="system" pointSize="26"/>
+                        <timer width="1" height="36" alignment="center" textAlignment="center" id="UGD-RB-8yI">
+                            <fontDescription key="font" type="system" pointSize="28"/>
                             <calendarUnit key="units" minute="YES" second="YES"/>
                         </timer>
                         <group width="1" height="0.29999999999999999" alignment="left" id="zch-V6-net">
                             <items>
-                                <label width="0.5" height="1" alignment="left" text="Rec num" textAlignment="left" id="Zk2-7b-mu2"/>
-                                <picker width="0.5" height="1" alignment="left" focusStyle="stack" id="lJN-9t-7cw">
-                                    <connections>
-                                        <action selector="recNumberPickerChanged:" destination="AgC-eL-Hgc" id="e3W-Hr-3H8"/>
-                                    </connections>
-                                </picker>
+                                <label width="0.5" height="1" alignment="left" text="Rec num" textAlignment="right" id="Zk2-7b-mu2">
+                                    <fontDescription key="font" style="UICTFontTextStyleBody"/>
+                                </label>
+                                <label width="0.5" height="1" alignment="left" text="0" textAlignment="center" id="RRB-PZ-UXz">
+                                    <fontDescription key="font" type="system" pointSize="28"/>
+                                </label>
                             </items>
                         </group>
-                        <group width="1" alignment="left" id="7oD-9e-Roh">
+                        <group width="1" alignment="center" id="7oD-9e-Roh">
                             <items>
                                 <button width="64" height="64" alignment="left" backgroundImage="record.circle.fill" catalog="system" id="GyS-fg-6Th">
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -45,7 +45,7 @@
                         </group>
                     </items>
                     <connections>
-                        <outlet property="recNumberPicker" destination="lJN-9t-7cw" id="M15-bb-7cc"/>
+                        <outlet property="recNumberLabel" destination="RRB-PZ-UXz" id="Lfv-2Y-1NK"/>
                         <outlet property="startButton" destination="GyS-fg-6Th" id="C1C-3A-lPy"/>
                         <outlet property="stopButton" destination="sIy-Fx-WIc" id="wx2-of-Vsx"/>
                         <outlet property="timer" destination="UGD-RB-8yI" id="Cqm-0a-qu6"/>

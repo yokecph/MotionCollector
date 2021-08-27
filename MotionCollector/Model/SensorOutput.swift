@@ -25,5 +25,14 @@ class SensorOutput: Codable {
     var magY: Double?
     var magZ: Double?
     
+    var quatX: Double?
+    var quatY: Double?
+    var quatZ: Double?
+    var quatW: Double?
+
+    var gravX: Double?
+    var gravY: Double?
+    var gravZ: Double?
+
     init() {}
 }

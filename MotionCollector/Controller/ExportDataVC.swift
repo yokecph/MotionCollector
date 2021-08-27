@@ -211,7 +211,7 @@ class ExportDataVC: UIViewController, UITableViewDelegate, UITableViewDataSource
         
         let fileName = "Motion-sessions_\(sessionDate).csv"
         let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
-        var csvText = "SessionID,SessionDate,SessionDuration,SessionFrequency,RecordID,Timestamp,timeIntervalSince1970,GyroX,GyroY,GyroZ,AccX,AccY,AccZ,MagX,MagY,MagZ,WatchTimestamp,WatchtImeIntervalSince1970,WatchGyroX,WatchGyroY,WatchGyroZ,WatchAccX,WatchAccY,WatchAccZ\n"
+        var csvText = "RecordID,TimeIntervalSince1970,GyroX,GyroY,GyroZ,AccX,AccY,AccZ,GravX,GravY,GravZ,QuatX,QuatY,QuatZ,QuatW\n"
         
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd HH:mm:ss.SSSS"
@@ -228,12 +228,10 @@ class ExportDataVC: UIViewController, UITableViewDelegate, UITableViewDataSource
             
             for session in sessions {
                 
-                let sessionID = "\(session.id)"
-                let sessionDate = "\(df.string(from: session.date! as Date))"
-                let sessionDuration = "\(session.duration!)"
-                let sessionFrequency = "\(session.frequency)"
+                if session.duration == nil { continue }
+                
                 let recordID = "\(session.recordID)"
-                let sessionInfoString = "\(sessionID),\(sessionDate),\(sessionDuration),\(sessionFrequency),\(recordID),"
+                let sessionInfoString = "\(recordID),"
                 // let sessionType = session.type
                 
                 var SensorOutputs1 = [SensorOutput]()
@@ -258,27 +256,17 @@ class ExportDataVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                 
                 for i in 0..<maxArray {
                     
-                    var sensorsInfo1 = ""
-                    var sensorsInfo2 = ""
-                    
-                    if  i < SensorOutputs1.count {
-                        sensorsInfo1 = "\(df.string(from: (SensorOutputs1[i].timeStamp as Date?)!)),\(String(describing: SensorOutputs1[i].timeStamp!.timeIntervalSince1970)),\(String(describing: SensorOutputs1[i].gyroX!)),\(String(describing: SensorOutputs1[i].gyroY!)),\(String(describing: SensorOutputs1[i].gyroZ!)),\(String(describing: SensorOutputs1[i].accX!)),\(String(describing: SensorOutputs1[i].accY!)),\(String(describing: SensorOutputs1[i].accZ!)),\(String(describing: SensorOutputs1[i].magX!)),\(String(describing: SensorOutputs1[i].magY!)),\(String(describing: SensorOutputs1[i].magZ!)),"
-                    }
+                    var sensorsInfo = ""
                     
                     if i < SensorOutputs2.count {
-                        sensorsInfo2 = "\(df.string(from: (SensorOutputs2[i].timeStamp as Date?)!)),\(String(describing: SensorOutputs2[i].timeStamp!.timeIntervalSince1970)),\(String(describing: SensorOutputs2[i].gyroX!)),\(String(describing: SensorOutputs2[i].gyroY!)),\(String(describing: SensorOutputs2[i].gyroZ!)),\(String(describing: SensorOutputs2[i].accX!)),\(String(describing: SensorOutputs2[i].accY!)),\(String(describing: SensorOutputs2[i].accZ!)),"
+                        sensorsInfo = "\(String(describing: SensorOutputs2[i].timeStamp!.timeIntervalSince1970)),\(String(describing: SensorOutputs2[i].gyroX!)),\(String(describing: SensorOutputs2[i].gyroY!)),\(String(describing: SensorOutputs2[i].gyroZ!)),\(String(describing: SensorOutputs2[i].accX!)),\(String(describing: SensorOutputs2[i].accY!)),\(String(describing: SensorOutputs2[i].accZ!)),\(String(describing: SensorOutputs2[i].gravX!)),\(String(describing: SensorOutputs2[i].gravY!)),\(String(describing: SensorOutputs2[i].gravZ!)),\(String(describing: SensorOutputs2[i].quatX!)),\(String(describing: SensorOutputs2[i].quatY!)),\(String(describing: SensorOutputs2[i].quatZ!)),\(String(describing: SensorOutputs2[i].quatW!)),"
+                    }
+                    
+                    if sensorsInfo == "" {
+                        sensorsInfo = ",,,,,,,,,,,,,,,,"
                     }
                     
                     
-                    if sensorsInfo1 == "" {
-                        sensorsInfo1 = ",,,,,,,,,,,"
-                    }
-                    if sensorsInfo2 == "" {
-                        sensorsInfo2 = ",,,,,,,,,"
-                    }
-                    
-                    
-                    let sensorsInfo = sensorsInfo1 + sensorsInfo2
                     let endOfLine = "\n"
                     
                     csvText.append(sessionInfoString + sensorsInfo + endOfLine)
@@ -336,8 +324,17 @@ class ExportDataVC: UIViewController, UITableViewDelegate, UITableViewDataSource
                 sensorOutput.magX = characteristic.x
                 sensorOutput.magY = characteristic.y
                 sensorOutput.magZ = characteristic.z
+            } else if characteristic.toCharacteristicName?.name == "Quat" {
+                sensorOutput.quatX = characteristic.x
+                sensorOutput.quatY = characteristic.y
+                sensorOutput.quatZ = characteristic.z
+                sensorOutput.quatW = characteristic.w
+            } else if characteristic.toCharacteristicName?.name == "Grav" {
+                sensorOutput.gravX = characteristic.x
+                sensorOutput.gravY = characteristic.y
+                sensorOutput.gravZ = characteristic.z
             }
-            
+
         }
         
         return sensorOutput
